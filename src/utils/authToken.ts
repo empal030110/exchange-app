@@ -6,3 +6,9 @@ export function setAccessTokenCookie(token: string) {
 
   document.cookie = `${ACCESS_TOKEN_COOKIE_KEY}=${encodeURIComponent( token )}; Max-Age=${ONE_DAY_IN_SECONDS}; Path=/; SameSite=Strict; ${secure}`;
 }
+
+export function clearAccessTokenCookie() {
+  const secure = location.protocol === 'https:' ? 'Secure;' : ''
+
+  document.cookie = `${ACCESS_TOKEN_COOKIE_KEY}=; Max-Age=0; Path=/; SameSite=Strict; ${secure}`
+}
