@@ -15,6 +15,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      '/exchange-rates': {
+        target: 'https://exchange-example.switchflow.biz',
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 })
