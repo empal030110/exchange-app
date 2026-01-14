@@ -5,16 +5,20 @@ import { ContantsHeader } from "../components/ContantsHeader"
 import { InfoCard } from "../components/info/InfoCard"
 import type { ExchangeRateItem } from "../api/exchangeRates"
 import { fetchLatestExchangeRates } from "../api/exchangeRates"
+import type { WalletItem } from "../api/wallets"
+import { fetchWallets } from "../api/wallets"
 import { InfoContainer } from "../components/container/InfoContainer"
 
 export function InfoPage() {
   const [rates, setRates] = useState<ExchangeRateItem[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [wallets, setWallets] = useState<WalletItem[] | null>(null);
+  const [totalKrwBalance, setTotalKrwBalance] = useState<number | null>(null);
 
   useEffect(() => {
     // 최신 환율 데이터 조회
-    async function load() {
+    async function loadRates() {
       try {
         const res = await fetchLatestExchangeRates();
 
@@ -49,11 +53,26 @@ export function InfoPage() {
       }
     }
 
+    // 지갑 데이터 조회
+    async function loadWallets() {
+      try {
+        const res = await fetchWallets();
+        setWallets(res.data.wallets);
+        setTotalKrwBalance(res.data.totalKrwBalance);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     // 최초 한 번 즉시 호출
-    load();
+    loadRates();
+    loadWallets();
 
     // 1분 마다 재호출
-    const intervalId = window.setInterval(load, 60_000);
+    const intervalId = window.setInterval(() => {
+      loadRates();
+      loadWallets();
+    }, 60_000);
 
     // 인터벌 정리
     return () => {
@@ -69,7 +88,7 @@ export function InfoPage() {
       {error && <p className="mt-4 text-red-500">{error}</p>}
       
       <div className="h-max flex flex-col justify-between gap-[24px] xl:flex-row">
-        <div className="w-full">
+        <div className="w-full h-auto">
           {/* 환율 정보 */}
           {!loading && !error && rates && (
             <div className="flex gap-[20px] mb-[24px]">
@@ -86,27 +105,42 @@ export function InfoPage() {
 
           {/* 내 지갑 */}
           <InfoContainer height={176}>
-            <div className="h-full flex flex-col gap-[24px] justify-between">
+            <div className="flex h-full flex-col gap-[24px] justify-between">
               <div className="flex flex-col gap-[24px]">
                 <p className="text-[24px] text-[#28323C] font-extrabold">내 지갑</p>
                 <div className="flex flex-col gap-[12px] text-[20px] text-[#646F7C]">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium">KRW</p>
-                    <p className="font-semibold">₩ 1,200.000</p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium">USD</p>
-                    <p className="font-semibold">$ 50.000</p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium">JPY</p>
-                    <p className="font-semibold">₩ 150.000</p>
-                  </div>
+                  {wallets?.map((wallet) => {
+                    // 포맷팅
+                    let formattedBalance = "";
+                    if (wallet.currency === "KRW") {
+                      formattedBalance = `₩ ${wallet.balance.toLocaleString("ko-KR")}`;
+                    } else if (wallet.currency === "USD") {
+                      formattedBalance = `$ ${wallet.balance.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}`;
+                    } else if (wallet.currency === "JPY") {
+                      formattedBalance = `¥ ${wallet.balance.toLocaleString("ja-JP")}`;
+                    } else {
+                      formattedBalance = wallet.balance.toLocaleString("ko-KR");
+                    }
+
+                    return (
+                      <div key={wallet.walletId} className="flex items-center justify-between">
+                        <p className="font-medium">{wallet.currency}</p>
+                        <p className="font-semibold">{formattedBalance}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
               <div className="flex items-center justify-between pt-[20px] border-t border-[#C5C8CE]">
                 <p className="text-[#646F7C] text-[20px] font-medium">총 보유 자산</p>
-                <p className="text-[#3479EB] text-[20px] font-bold">₩ 3,000,000</p>
+                <p className="text-[#3479EB] text-[20px] font-bold">
+                  {totalKrwBalance !== null
+                    ? `₩ ${totalKrwBalance.toLocaleString("ko-KR")}`
+                    : "₩ 0"}
+                </p>
               </div>
             </div>
           </InfoContainer>

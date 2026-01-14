@@ -20,6 +20,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      '/wallets': {
+        target: 'https://exchange-example.switchflow.biz',
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 })
