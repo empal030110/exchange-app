@@ -70,15 +70,15 @@ export function HistoryPage() {
         <ContantsContainer>
             <ContantsHeader title="환전 내역" desc="환전 내역을 확인하실 수 있어요." />
             <div className="w-full mt-[40px] border border-[#D0D6DB] rounded-[16px] py-[12px]">
-                <div className="w-full">
-                    <div className="flex border-y border-[#D0D6DB] py-[14px] px-[40px] text-[#646F7C] text-[18px]">
+                <div className="w-full whitespace-nowrap overflow-x-auto scrollbar-hide">
+                    <div className="flex gap-[24px] border-y border-[#D0D6DB] py-[14px] px-[40px] text-[#646F7C] text-[18px] overflow-x-auto scrollbar-hide">
                         <p className="flex-1">거래 ID</p>
                         <p className="flex-1">거래 일시</p>
                         <p className="flex-1 text-end">매수 금액</p>
                         <p className="flex-1 text-end">체결 환율</p>
                         <p className="flex-1 text-end">매도 금액</p>
                     </div>
-                    <div className="h-max max-h-[540px] overflow-y-auto text-[#374553] text-[18px]">
+                    <div className="h-max max-h-[540px] overflow-y-auto text-[#374553] text-[18px] scrollbar-hide">
                         {loading && (
                             <div className="w-full pt-[30px] px-[40px] text-center text-[#646F7C]">
                                 환전 내역을 불러오는 중입니다...
@@ -95,7 +95,7 @@ export function HistoryPage() {
                             </div>
                         )}
                         {!loading && !error && orders.map((order) => (
-                            <div key={order.orderId} className="w-full pt-[30px] px-[40px] flex">
+                            <div key={order.orderId} className="w-full pt-[30px] px-[40px] flex gap-[24px]">
                                 <p className="flex-1">{order.orderId}</p>
                                 <p className="flex-1">{formatDateTime(order.orderedAt)}</p>
                                 <p className="flex-1 text-end">
