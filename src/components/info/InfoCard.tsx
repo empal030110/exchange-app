@@ -14,7 +14,7 @@ export function InfoCard({ title, rate, changePercentage }: InfoCardProps) {
     maximumFractionDigits: 2,
   })} KRW`;
 
-  const desc = title === 'USD' ? '미국 달러' : '일본 원화';
+  const desc = title === 'USD' ? '미국 달러' : '일본 엔화';
 
   return (
     <div className="w-full flex flex-col gap-[8px] border border-[#D0D6DB] rounded-[12px] py-[24px] px-[32px]">
