@@ -81,4 +81,36 @@ export async function fetchExchangeQuote(
   }
 }
 
+export type ExchangeOrderRequest = {
+  exchangeRateId: number;
+  fromCurrency: string;
+  toCurrency: string;
+  forexAmount: number;
+}
+
+export type ExchangeOrderResponse = {
+  code: string;
+  message: string;
+  data: string;
+}
+
+export async function createExchangeOrder(
+  request: ExchangeOrderRequest
+): Promise<ExchangeOrderResponse> {
+  const token = getAccessTokenCookie();
+
+  if (!token) {
+    throw new Error("인증 토큰이 없습니다. 다시 로그인 해주세요.");
+  }
+
+  const response = await api.post("orders", {
+    json: request,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.json<ExchangeOrderResponse>();
+}
+
 

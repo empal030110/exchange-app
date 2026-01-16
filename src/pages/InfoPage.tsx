@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { HTTPError } from "ky"
 import { ContantsContainer } from "../components/container/ContantsContainer"
 import { ContantsHeader } from "../components/ContantsHeader"
@@ -16,6 +16,17 @@ export function InfoPage() {
   const [error, setError] = useState<string | null>(null);
   const [wallets, setWallets] = useState<WalletItem[] | null>(null);
   const [totalKrwBalance, setTotalKrwBalance] = useState<number | null>(null);
+
+  // 지갑 데이터 조회
+  const loadWallets = useCallback(async () => {
+    try {
+      const res = await fetchWallets();
+      setWallets(res.data.wallets);
+      setTotalKrwBalance(res.data.totalKrwBalance);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
   useEffect(() => {
     // 최신 환율 데이터 조회
@@ -54,17 +65,6 @@ export function InfoPage() {
       }
     }
 
-    // 지갑 데이터 조회
-    async function loadWallets() {
-      try {
-        const res = await fetchWallets();
-        setWallets(res.data.wallets);
-        setTotalKrwBalance(res.data.totalKrwBalance);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
     // 최초 한 번 즉시 호출
     loadRates();
     loadWallets();
@@ -79,7 +79,7 @@ export function InfoPage() {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [])
+  }, [loadWallets])
 
   return (
     <ContantsContainer>
@@ -148,7 +148,7 @@ export function InfoPage() {
         </div>
         <div className="w-full h-auto">
           <InfoContainer>
-            {rates && (<ExchangeForm usdRate={rates[0].rate} jpyRate={rates[1].rate} />)}
+            {rates && (<ExchangeForm usdRate={rates[0].rate} jpyRate={rates[1].rate} rates={rates} onExchangeSuccess={loadWallets} />)}
           </InfoContainer>
         </div>
       </div>
