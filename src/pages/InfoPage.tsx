@@ -8,6 +8,7 @@ import { fetchLatestExchangeRates } from "../api/exchangeRates"
 import type { WalletItem } from "../api/wallets"
 import { fetchWallets } from "../api/wallets"
 import { InfoContainer } from "../components/container/InfoContainer"
+import { ExchangeForm } from "../components/info/ExchangeForm"
 
 export function InfoPage() {
   const [rates, setRates] = useState<ExchangeRateItem[] | null>(null);
@@ -145,9 +146,9 @@ export function InfoPage() {
             </div>
           </InfoContainer>
         </div>
-        <div className="w-full h-[700px]">
+        <div className="w-full h-auto">
           <InfoContainer>
-            환전 섹션
+            <ExchangeForm />
           </InfoContainer>
         </div>
       </div>
