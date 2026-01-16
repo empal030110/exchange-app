@@ -113,4 +113,36 @@ export async function createExchangeOrder(
   return response.json<ExchangeOrderResponse>();
 }
 
+export type ExchangeOrderItem = {
+  orderId: number;
+  fromCurrency: string;
+  fromAmount: number;
+  toCurrency: string;
+  toAmount: number;
+  appliedRate: number;
+  orderedAt: string;
+}
+
+export type ExchangeOrdersResponse = {
+  code: string;
+  message: string;
+  data: ExchangeOrderItem[];
+}
+
+export async function fetchExchangeOrders(): Promise<ExchangeOrdersResponse> {
+  const token = getAccessTokenCookie();
+
+  if (!token) {
+    throw new Error("인증 토큰이 없습니다. 다시 로그인 해주세요.");
+  }
+
+  const response = await api.get("orders", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.json<ExchangeOrdersResponse>();
+}
+
 
