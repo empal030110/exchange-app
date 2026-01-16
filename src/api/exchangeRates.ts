@@ -35,4 +35,50 @@ export async function fetchLatestExchangeRates(): Promise<LatestExchangeRatesRes
   return response.json<LatestExchangeRatesResponse>();
 }
 
+export type ExchangeQuoteRequest = {
+  fromCurrency: string;
+  toCurrency: string;
+  forexAmount: number;
+}
+
+export type ExchangeQuoteResponse = {
+  code: string;
+  message: string;
+  data: {
+    krwAmount: number;
+    appliedRate: number;
+  };
+}
+
+export async function fetchExchangeQuote(
+  request: ExchangeQuoteRequest
+): Promise<ExchangeQuoteResponse> {
+  const token = getAccessTokenCookie();
+
+  if (!token) {
+    throw new Error("인증 토큰이 없습니다. 다시 로그인 해주세요.");
+  }
+
+  try {
+    const response = await api.get("orders/quote", {
+      searchParams: {
+        fromCurrency: request.fromCurrency,
+        toCurrency: request.toCurrency,
+        forexAmount: request.forexAmount.toString(),
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.json<ExchangeQuoteResponse>();
+  } catch (error) {
+    // HTML 응답이 오는 경우
+    if (error instanceof Error && error.message.includes('JSON')) {
+      throw new Error("서버 응답 오류가 발생했습니다.");
+    }
+    throw error;
+  }
+}
+
 

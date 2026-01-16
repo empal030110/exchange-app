@@ -25,6 +25,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      '/orders': {
+        target: 'https://exchange-example.switchflow.biz',
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 })

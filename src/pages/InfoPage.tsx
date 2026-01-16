@@ -148,7 +148,7 @@ export function InfoPage() {
         </div>
         <div className="w-full h-auto">
           <InfoContainer>
-            <ExchangeForm />
+            {rates && (<ExchangeForm usdRate={rates[0].rate} jpyRate={rates[1].rate} />)}
           </InfoContainer>
         </div>
       </div>
